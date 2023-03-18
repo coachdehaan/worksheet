@@ -68,7 +68,8 @@ const scores = {
   red: 0,
   blue: 0,
 };
-
+</script>
+<script>
 // Sample questions and answers
 const questions = [
   {
@@ -102,8 +103,8 @@ const questions = [
     wordBank: ["central, peripheral", "autonomic, somatic", "sympathetic, parasympathetic"],
   },
 ];
-
-
+</script>
+<script>
 // Team selection logic
 const redTeamButton = document.getElementById("red-team");
 const blueTeamButton = document.getElementById("blue-team");
@@ -198,7 +199,7 @@ function saveScore() {
     correctAnswers: (scores[selectedTeam] += 1),
   });
 }
-
+</script>
 // Call saveScore() whenever a correct answer is selected
 
 
