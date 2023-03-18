@@ -27,9 +27,26 @@
     <span>Blue Team: <span id="blue-score">0</span></span>
   </div>
 
-  <script>
-    // Firebase configuration and initialization code goes here
-  </script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC6toyds2tLzyfiINLUXgPeEgSDU2WhwkI",
+    authDomain: "worksheet-9f4d8.firebaseapp.com",
+    databaseURL: "https://worksheet-9f4d8-default-rtdb.firebaseio.com",
+    projectId: "worksheet-9f4d8",
+    storageBucket: "worksheet-9f4d8.appspot.com",
+    messagingSenderId: "223669808651",
+    appId: "1:223669808651:web:7faa06a79f4a187262210e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Add the Firebase related code here
+</script>
+
 
   <script>
    // Variables to store the selected team and the scores
@@ -113,6 +130,20 @@ const blueScoreElement = document.getElementById("blue-score");
 function updateScores() {
   redScoreElement.innerText = scores.red;
   blueScoreElement.innerText = scores.blue;
+}
+function saveScores() {
+  const scoresRef = ref(db, "scores");
+  set(scoresRef, scores);
+}
+function listenForScoreUpdates() {
+  const scoresRef = ref(db, "scores");
+  onValue(scoresRef, (snapshot) => {
+    const updatedScores = snapshot.val();
+    if (updatedScores) {
+      scores = updatedScores;
+      updateScores();
+    }
+  });
 }
 
   </script>
