@@ -60,8 +60,7 @@
       </select>
     </div>
     <div id="worksheet"></div>
-    <button id="submit-button">Submit Answers</button>
-    <div>
+        <div>
       <h2>Individual Scores</h2>
       <ul id="individual-scores"></ul>
     </div>
@@ -280,15 +279,14 @@ option.classList.add("wrong-answer");
 ;
 
 // Save score to database
+// Save score to database
 function saveScore(questionIndex, selectedAnswer, correctAnswer) {
-  if (selectedTeam) {
-    const scoreRef = push(scoresRef);
+  if (selectedTeam && selectedStudent) {
+    const studentRef = ref(db, `students/${selectedStudent}`);
+    const scoreRef = push(ref(db, `scores/${selectedTeam}/${selectedStudent}`));
     set(scoreRef, {
-      team: selectedTeam,
-      student: selectedStudent,
       question: questionIndex,
-      answer: answer,
-      selectedAnswer: selectedAnswer,
+      answer: selectedAnswer,
       correctAnswer: correctAnswer,
       timestamp: Date.now(),
     })
@@ -298,8 +296,21 @@ function saveScore(questionIndex, selectedAnswer, correctAnswer) {
       .catch((error) => {
         console.error("Error saving score:", error);
       });
+
+    // Update the student's answers
+    const answersRef = ref(studentRef, "answers");
+    set(answersRef, {
+      [questionIndex]: selectedAnswer,
+    })
+      .then(() => {
+        console.log("Student's answer saved successfully");
+      })
+      .catch((error) => {
+        console.error("Error saving student's answer:", error);
+      });
   }
 }
+
 
 
 // Display individual and team scores
