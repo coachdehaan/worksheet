@@ -44,18 +44,32 @@
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
       import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
-      const questions = [  {    question: "The capital of France is ___",    correctAnswer: "Paris",    wordBank: ["London", "Paris", "Madrid", "Berlin"]
+      const scienceQuestions = [
+  {
+    question: "What is the smallest particle of matter?",
+    correctAnswer: "Atom",
+    wordBank: ["Molecule", "Electron", "Proton", "Atom"],
   },
   {
-    question: "The largest planet in our solar system is ___",
-    correctAnswer: "Jupiter",
-    wordBank: ["Venus", "Mars", "Jupiter", "Saturn"]
+    question: "What type of energy is stored in a stretched rubber band?",
+    correctAnswer: "Elastic potential energy",
+    wordBank: [
+      "Kinetic energy",
+      "Thermal energy",
+      "Nuclear energy",
+      "Elastic potential energy",
+    ],
   },
   {
-    question: "The author of 'The Hobbit' is ___",
-    correctAnswer: "J.R.R. Tolkien",
-    wordBank: ["J.K. Rowling", "George R.R. Martin", "J.R.R. Tolkien", "Stephen King"]
-  }
+    question: "What type of energy is produced by nuclear fusion in the sun?",
+    correctAnswer: "Radiant energy",
+    wordBank: [
+      "Potential energy",
+      "Chemical energy",
+      "Radiant energy",
+      "Nuclear energy",
+    ],
+  },
 ];
 
       
