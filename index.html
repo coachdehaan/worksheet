@@ -64,6 +64,38 @@
    // Variables to store the selected team, student name, and the scores
 let selectedTeam = null;
 let selectedStudent = null;
+
+// Team selection logic
+redTeamButton = document.getElementById("red-team");
+blueTeamButton = document.getElementById("blue-team");
+studentNameSelect = document.getElementById("student-name");
+
+redTeamButton.addEventListener("click", () => {
+  if (!selectedStudent) {
+    return alert("Please select a student first.");
+  }
+  selectedTeam = "red";
+  redTeamButton.classList.add("selected");
+  blueTeamButton.classList.remove("selected");
+});
+
+blueTeamButton.addEventListener("click", () => {
+  if (!selectedStudent) {
+    return alert("Please select a student first.");
+  }
+  selectedTeam = "blue";
+  blueTeamButton.classList.add("selected");
+  redTeamButton.classList.remove("selected");
+});
+
+studentNameSelect.addEventListener("change", (event) => {
+  selectedStudent = event.target.value;
+  selectedTeam = null;
+  redTeamButton.classList.remove("selected");
+  blueTeamButton.classList.remove("selected");
+});
+
+
 const scores = {
   red: 0,
   blue: 0,
