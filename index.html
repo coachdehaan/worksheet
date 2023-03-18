@@ -10,6 +10,12 @@
       .selected {
         border: 2px solid;
       }
+      .answered {
+        background-color: green;
+      }
+      .wrong-answer {
+        background-color: red;
+      }
     </style>
   </head>
   <body>
@@ -47,12 +53,15 @@
 
       const app = initializeApp(firebaseConfig);
       const db = getDatabase(app);
+      const selectionRef = ref(db, "selection");
+      const scoresRef = ref(db, "scores");
 
       // Team selection logic
-      redTeamButton = document.getElementById("red-team");
-      blueTeamButton = document.getElementById("blue-team");
-      studentNameSelect = document.getElementById("student-name");
-      worksheetDiv = document.getElementById("worksheet");
+      const redTeamButton = document.getElementById("red-team");
+      const blueTeamButton = document.getElementById("blue-team");
+      const studentNameSelect = document.getElementById("student-name");
+      const worksheetDiv = document.getElementById("worksheet");
+      const submitButton = document.getElementById("submit-button");
 
       let selectedTeam = null;
       let selectedStudent = null;
@@ -86,87 +95,7 @@
         }
       });
 
-      // Sample questions and answers
-      const questions = [
-        {
-          question:
-            "The Skeletal System is made of ___ bones and the connective tissue.",
-          correctAnswer: "206",
-          wordBank: ["200", "206", "215"],
-        },
-        {
-          question: "Cartilage is a type of ___ connective tissue.",
-          correctAnswer: "strong, flexible",
-          wordBank: ["rigid, inflexible", "strong, flexible", "elastic, stretchy"],
-        },
-        {
-          question: "A ___ is a band of fibrous, slightly elastic connective tissue that attaches one bone to another.",
-          correctAnswer: "ligament",
-          wordBank: ["tendon", "ligament", "cartilage"],
-        },
-        {
-          question: "The ___ muscles are attached to bones and cause body movements.",
-          correctAnswer: "skeletal",
-          wordBank: ["smooth", "skeletal", "cardiac"],
-        },
-        {
-          question: "The ___ is the largest and most complex part of the brain.",
-          correctAnswer: "cerebrum",
-          wordBank: ["cerebellum", "cerebrum", "brain stem"],
-        },
-        {
-          question: "The Peripheral Nervous System consists of the ___ and the ___ nervous systems.",
-          correctAnswer: "autonomic, somatic",
-          wordBank: ["central, peripheral", "autonomic, somatic", "sympathetic, parasympathetic"],
-        },
-      ];
-
-      // Variables to store the selected team, student name, and the scores
-     
-      const scores = {
-        red: 0,
-        blue: 0,
-      };
-
-      // Team selection logic
-      const redTeamButton = document.getElementById("red-team");
-      const blueTeamButton = document.getElementById("blue-team");
-      const studentNameSelect = document.getElementById("student-name");
-
-      redTeamButton.addEventListener("click", () => {
-        selectedTeam = "red";
-        redTeamButton.classList.add("selected");
-        blueTeamButton.classList.remove("selected");
-        saveSelection();
-      });
-
-      blueTeamButton.addEventListener("click", () => {
-        selectedTeam = "blue";
-        blueTeamButton.classList.add("selected");
-        redTeamButton.classList.remove("selected");
-        saveSelection();
-      });
-
-      studentNameSelect.addEventListener("change", (event) => {
-        selectedStudent = event.target.value;
-        saveSelection();
-      });
-
-      function saveSelection() {
-        if (selectedTeam && selectedStudent) {
-          const selectionRef = ref(db, "selection");
-          set(selectionRef, {
-            team: selectedTeam,
-            student: selectedStudent,
-          });
-          redTeamButton.disabled = true;
-          blueTeamButton.disabled = true;
-          studentNameSelect.disabled = true;
-        }
-      }
-
       // Worksheet logic
-      const worksheetDiv = document.getElementById("worksheet");
       questions.forEach((question, index) => {
         const questionElement = document.createElement("div");
         questionElement.innerHTML = `
@@ -188,7 +117,6 @@
       worksheetDiv.addEventListener("click", (event) => {
         if (event.target.tagName !== "BUTTON") return;
         const selectElement = event.target.previousSibling;
-        correctAnswer = select        
         const correctAnswer = selectElement.dataset.correctAnswer;
         const selectedAnswer = selectElement.value;
         const questionIndex = selectElement.dataset.questionIndex;
@@ -212,6 +140,48 @@
         const questionRef = ref(studentRef, `${questionIndex}`);
 
         set(questionRef, true);
+
+        // Calculate and update team score
+        let teamScoreElement;
+        if (selectedTeam === "red") {
+          scores.red += 1;
+          teamScoreElement = document.getElementById("red-score");
+        } else {
+          scores.blue += 1;
+          teamScoreElement = document.getElementById("blue-score");
+        }
+        teamScoreElement.textContent = scores[selectedTeam];
       }
 
+      // Load individual and team scores from Firebase
+      const scoresRef = ref(db, "scores");
+      onValue(scoresRef, (snapshot) => {
+        const data = snapshot.val();
+        if (!data) return;
 
+        // Update individual scores
+        const individualScoresList = document.getElementById(
+          "individual-scores"
+        );
+        individualScoresList.innerHTML = "";
+        Object.entries(data).forEach(([student, scores]) => {
+          const studentScoreElement = document.createElement("li");
+          studentScoreElement.innerHTML = `${student}: ${Object.values(
+            scores
+          ).filter(Boolean).length} / ${questions.length}`;
+          individualScoresList.appendChild(studentScoreElement);
+        });
+
+        // Update team scores
+        scores.red = Object.values(data)
+          .map((scores) => scores.red)
+          .filter(Boolean).length;
+        scores.blue = Object.values(data)
+          .map((scores) => scores.blue)
+          .filter(Boolean).length;
+        document.getElementById("red-score").textContent = scores.red;
+        document.getElementById("blue-score").textContent = scores.blue;
+      });
+    </script>
+  </body>
+</html>
