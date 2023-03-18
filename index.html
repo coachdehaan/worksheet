@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Worksheet</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <style>
+    .selected {
+      border: 2px solid;
+    }
+  </style>
+</head>
+<body>
+  <div id="team-selection">
+    <button id="red-team">Red Team</button>
+    <button id="blue-team">Blue Team</button>
+  </div>
+  
+  <div id="worksheet">
+    <!-- Fill-in-the-blank questions with word bank dropdowns go here -->
+  </div>
+  
+  <div id="results">
+    <span>Red Team: <span id="red-score">0</span></span>
+    <span>Blue Team: <span id="blue-score">0</span></span>
+  </div>
+
+  <script>
+    // Firebase configuration and initialization code goes here
+  </script>
+
+  <script>
+   // Variables to store the selected team and the scores
+let selectedTeam = null;
+const scores = {
+  red: 0,
+  blue: 0,
+};
+
+// Sample questions and answers
+const questions = [
+  {
+    question: "The color of the sky is ___",
+    correctAnswer: "blue",
+    wordBank: ["red", "blue", "green"],
+  },
+  {
+    question: "The color of grass is ___",
+    correctAnswer: "green",
+    wordBank: ["red", "blue", "green"],
+  },
+];
+
+// Team selection logic
+const redTeamButton = document.getElementById("red-team");
+const blueTeamButton = document.getElementById("blue-team");
+
+redTeamButton.addEventListener("click", () => {
+  selectedTeam = "red";
+  redTeamButton.classList.add("selected");
+  blueTeamButton.classList.remove("selected");
+});
+
+blueTeamButton.addEventListener("click", () => {
+  selectedTeam = "blue";
+  redTeamButton.classList.remove("selected");
+  blueTeamButton.classList.add("selected");
+});
+
+// Render the fill-in-the-blank questions
+const worksheet = document.getElementById("worksheet");
+
+questions.forEach((questionData, questionIndex) => {
+  const questionDiv = document.createElement("div");
+
+  const questionText = document.createElement("p");
+  questionText.innerText = questionData.question;
+  questionDiv.appendChild(questionText);
+
+  const answerSelect = document.createElement("select");
+  questionData.wordBank.forEach((answer) => {
+    const option = document.createElement("option");
+    option.value = answer;
+    option.textContent = answer;
+    answerSelect.appendChild(option);
+  });
+
+  answerSelect.addEventListener("change", () => {
+    if (selectedTeam) {
+      const isCorrect = answerSelect.value === questionData.correctAnswer;
+      if (isCorrect) {
+        scores[selectedTeam]++;
+        updateScores();
+      }
+      answerSelect.disabled = true;
+    } else {
+      alert("Please select a team first!");
+      answerSelect.value
+      answerSelect.value = '';
+    }
+  });
+
+  questionDiv.appendChild(answerSelect);
+  worksheet.appendChild(questionDiv);
+});
+
+// Update the scores display
+const redScoreElement = document.getElementById("red-score");
+const blueScoreElement = document.getElementById("blue-score");
+
+function updateScores() {
+  redScoreElement.innerText = scores.red;
+  blueScoreElement.innerText = scores.blue;
+}
+
+  </script>
+</body>
+</html>
