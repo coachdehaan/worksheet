@@ -1,144 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Attendance</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-<style>
-body {
-  font-family: Arial, sans-serif; 
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Team Worksheet</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <style>
+      .selected {
+        border: 2px solid;
+      }
+      .answered {
+        background-color: green;
+      }
+      .wrong-answer {
+        background-color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="team-selection">
+      <button id="red-team">Red Team</button>
+      <button id="blue-team">Blue Team</button>
+      <select id="student-name">
+        <option value="">Select student</option>
+        <!-- Add student names here -->
+        <option value="John">John</option>
+        <option value="Jane">Jane</option>
+        <option value="Mike">Mike</option>
+      </select>
+    </div>
 
-}
+    <div id="worksheet">
+      <!-- Fill-in-the-blank questions with word bank dropdowns go here -->
+      
+    </div>
 
-#event-selection {
-  margin-bottom: 1rem;
-}
+    <div id="results">
+      <h3>Individual Scores</h3>
+      <ul id="individual-scores"></ul>
+      <h3>Team Scores</h3>
+      <span>Red Team: <span id="red-score">0</span></span>
+      <span>Blue Team: <span id="blue-score">0</span></span>
+    </div>
 
-.attendee-list {
-  margin-bottom: 1rem;
-}
-
-.attendee {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.attendee-name {
-  width: 150px;
-  font-weight: bold;
-}
-
-.attendee-checkbox {
-  margin-left: 10px;
-}
-h1 {
-  text-align: center;
-  font-size: calc(1rem + 2vw);
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-</style>
-</head>
-<body>
-  <h1>⚡ACDC BOYS BBALL⚡</h1>
-
-  <div id="event-selection"></div>
-  <div id="attendee-list"></div>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCTVf7UuZYlMfiRRdF3aOZlipVgGwWntsM",
-    authDomain: "acdcboybasketball.firebaseapp.com",
-    databaseURL: "https://acdcboybasketball-default-rtdb.firebaseio.com",
-    projectId: "acdcboybasketball",
-    storageBucket: "acdcboybasketball.appspot.com",
-    messagingSenderId: "488795731492",
-    appId: "1:488795731492:web:4d20b1644c27f85388cab1"
-  };
-
-  const firebaseApp = firebase.initializeApp(firebaseConfig);
-  const database = firebaseApp.database();
-
-  const events = [
-//{ name: "DC Open GYM", date: "March 18, 10am" },
-    { name: "U16 Spring Jam Sioux Falls", date: "April 22-23" },
-    { name: "USF Team Sioux Falls", date: "June 17-18" },
-    { name: "U16 Summer Classic Sioux Falls", date: "July 21-23" },
-    { name: "Hardknockers Rapid City", date: "July 28-29" }
-  ];
-
-  const attendees = [
-    "AJ", "Anaias", "Peter", "Garth", "Ryder", "Sabas", "Hunter", "Tyson", "Tate", "Jamian", "Ethan", "Isaiah", "TyBo", "Justin", "Koda", "Kashton", "Ty", "Ephesian", "Others?"
-  ];
-
-  function updateAttendance(eventIndex, attendeeIndex, attending) {
-    const eventRef = database.ref(`events/${eventIndex}/${attendeeIndex}`);
-    eventRef.set(attending);
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+      import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
+      const questions = [  {    question: "The capital of France is ___",    correctAnswer: "Paris",    wordBank: ["London", "Paris", "Madrid", "Berlin"]
+  },
+  {
+    question: "The largest planet in our solar system is ___",
+    correctAnswer: "Jupiter",
+    wordBank: ["Venus", "Mars", "Jupiter", "Saturn"]
+  },
+  {
+    question: "The author of 'The Hobbit' is ___",
+    correctAnswer: "J.R.R. Tolkien",
+    wordBank: ["J.K. Rowling", "George R.R. Martin", "J.R.R. Tolkien", "Stephen King"]
   }
+];
 
-  function renderEventSelection() {
-    const eventSelection = document.getElementById("event-selection");
-    eventSelection.innerHTML = "";
+   
+        // Add your firebase configuration here
+        const firebaseConfig = {
+  apiKey: "AIzaSyC6toyds2tLzyfiINLUXgPeEgSDU2WhwkI",
+  authDomain: "worksheet-9f4d8.firebaseapp.com",
+  databaseURL: "https://worksheet-9f4d8-default-rtdb.firebaseio.com",
+  projectId: "worksheet-9f4d8",
+  storageBucket: "worksheet-9f4d8.appspot.com",
+  messagingSenderId: "223669808651",
+  appId: "1:223669808651:web:7faa06a79f4a187262210e"
+};
+      };
 
-    const select = document.createElement("select");
-    select.addEventListener("change", () => {
-      renderAttendeeList(select.selectedIndex);
-    });
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+      const selectionRef = ref(db, "selection");
+      const scoresRef = ref(db, "scores");
 
-    const defaultOption = document.createElement("option");
-    defaultOption.textContent = "Select an event";
-    defaultOption.disabled = true;
-    defaultOption.selected = true;
-    select.appendChild(defaultOption);
+      // Team selection logic
+      const redTeamButton = document.getElementById("red-team");
+      const blueTeamButton = document.getElementById("blue-team");
+      const studentNameSelect = document.getElementById("student-name");
+      const worksheetDiv = document.getElementById("worksheet");
+      const submitButton = document.getElementById("submit-button");
 
-    events.forEach((event, index) => {
-      const option = document.createElement("option");
-      option.textContent = `${event.name} (${event.date})`;
-      option.value = index;
-      select.appendChild(option);
-    });
+      let selectedTeam = null;
+      let selectedStudent = null;
 
-    eventSelection.appendChild(select);
+      redTeamButton.addEventListener("click", () => {
+  if (selectedStudent) {
+    set(ref(db, `students/${selectedStudent}/team`), "red")
+      .then(() => {
+        console.log(`Selected team for ${selectedStudent}: red`);
+      })
+      .catch((error) => {
+        console.error(`Error selecting red team for ${selectedStudent}:`, error);
+      });
+    redTeamButton.classList.add("selected");
+    blueTeamButton.classList.remove("selected");
   }
+});
 
-  function renderAttendeeList(eventIndex) {
-  const attendeeList = document.getElementById("attendee-list");
-  attendeeList.innerHTML = "";
+blueTeamButton.addEventListener("click", () => {
+  if (selectedStudent) {
+    set(ref(db, `students/${selectedStudent}/team`), "blue")
+      .then(() => {
+        console.log(`Selected team for ${selectedStudent}: blue`);
+      })
+      .catch((error) => {
+        console.error(`Error selecting blue team for ${selectedStudent}:`, error);
+      });
+    blueTeamButton.classList.add("selected");
+    redTeamButton.classList.remove("selected");
+  }
+});
 
-  attendees.forEach((attendee, attendeeIndex) => {
-    const attendeeDiv = document.createElement("div");
-    attendeeDiv.classList.add("attendee");
+studentNameSelect.addEventListener("change", (event) => {
+  selectedStudent = event.target.value;
 
-    const attendeeName = document.createElement("span");
-    attendeeName.classList.add("attendee-name");
-    attendeeName.textContent = attendee;
-    attendeeDiv.appendChild(attendeeName);
-
-    const attendeeCheckbox = document.createElement("input");
-    attendeeCheckbox.type = "checkbox";
-    attendeeCheckbox.classList.add("attendee-checkbox");
-    attendeeCheckbox.addEventListener("change", (event) => {
-      updateAttendance(eventIndex, attendeeIndex, event.target.checked);
+  if (selectedStudent) {
+    onValue(ref(db, `students/${selectedStudent}/team`), (snapshot) => {
+      const team = snapshot.val();
+      selectedTeam = team;
+      redTeamButton.classList.toggle("selected", team === "red");
+      blueTeamButton.classList.toggle("selected", team === "blue");
     });
-    attendeeDiv.appendChild(attendeeCheckbox);
+  }
+});
+questions.forEach((question, index) => {
+  const questionElement = document.createElement("div");
+  questionElement.innerHTML = `
+    <p>${question.question}</p>
+    <select data-correct-answer="${question.correctAnswer}" data-question-index="${index}">
+      <option value="">Select answer</option>
+      ${question.wordBank
+        .map(
+          (answer) =>
+            `<option value="${answer}">${answer}</option>`
+        )
+        .join("")}
+    </select>
+    <button class="answer-button">Submit Answer</button>
+  `;
+  worksheetDiv.appendChild(questionElement);
+});
 
-    // Load saved attendance information from Firebase
-    const eventRef = database.ref(`events/${eventIndex}/${attendeeIndex}`);
-    eventRef.on("value", (snapshot) => {
-      attendeeCheckbox.checked = snapshot.val() || false;
-    });
+worksheetDiv.addEventListener("click", (event) => {
+  if (!event.target.classList.contains("answer-button")) return;
+  const selectElement = event.target.previousSibling;
+  const correctAnswer = selectElement.dataset.correctAnswer;
+  const selectedAnswer = selectElement.value;
+  const questionIndex = selectElement.dataset.questionIndex;
+  const teamColor = selectedTeam === "red" ? "red" : "blue";
 
-    attendeeList.appendChild(attendeeDiv);
-  });
-}
-
-
-  renderEventSelection();
-
-</script>
-</body>
-</html>
-
+  // Check if answer is correct and update scores
+  if (selectedAnswer === correctAnswer) {
+    saveScore(questionIndex);
+    event.target.style.backgroundColor = teamColor;
+    selectElement.disabled = true;
+  } else {
+    event.target.style.backgroundColor = "grey";
+  }
+  
+  // Disable the submit button after clicking
+  event.target.disabled = true;
+  event.target.classList.add("answered");
+  selectElement.disabled = true;
+  
+  // Highlight the correct and incorrect answers
+  const options = selectElement.options;
+  for (let i = 0; i < options.length; i++) {
+    const option = options[i];
+    if (option.value === correctAnswer) {
+      option.classList.add("correct-answer");
+    } else if (option.value === selectedAnswer) {
+      option.classList.add("wrong-answer");
+    }
+  }
+});
