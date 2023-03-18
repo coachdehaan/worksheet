@@ -192,10 +192,11 @@ worksheetDiv.addEventListener("click", (event) => {
 
   // Check if answer is correct and update scores
   if (selectedAnswer === correctAnswer) {
-    saveScore(questionIndex, selectedAnswer, correctAnswer);
+    saveScore(questionIndex, selectedAnswer);
     event.target.style.backgroundColor = teamColor;
     selectElement.disabled = true;
   } else {
+    saveScore(questionIndex, selectedAnswer);
     event.target.style.backgroundColor = "grey";
   }
 
@@ -215,6 +216,35 @@ worksheetDiv.addEventListener("click", (event) => {
     }
   }
 });
+
+  if (!event.target.classList.contains("answer-button")) return;
+  
+
+  // Check if answer is correct and update scores
+  if (selectedAnswer === correctAnswer) {
+    saveScore(questionIndex, selectedAnswer, correctAnswer);
+    event.target.style.backgroundColor = teamColor;
+    selectElement.disabled = true;
+  } else {
+    event.target.style.backgroundColor = "grey";
+  }
+
+  // Disable the submit button after clicking
+  event.target.disabled = true;
+  event.target.classList.add("answered");
+  selectElement.disabled = true;
+
+  // Highlight the correct and incorrect answers
+ 
+  for (let i = 0; i < options.length; i++) {
+    const option = options[i];
+    if (option.value === correctAnswer) {
+      option.classList.add("correct-answer");
+    } else if (option.value === selectedAnswer) {
+      option.classList.add("wrong-answer");
+    }
+  }
+;
 
   if (!event.target.classList.contains("answer-button")) return;
   const selectElement = event.target.previousSibling;
@@ -257,6 +287,7 @@ function saveScore(questionIndex, selectedAnswer, correctAnswer) {
       team: selectedTeam,
       student: selectedStudent,
       question: questionIndex,
+      answer: answer,
       selectedAnswer: selectedAnswer,
       correctAnswer: correctAnswer,
       timestamp: Date.now(),
