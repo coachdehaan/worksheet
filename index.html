@@ -1,172 +1,288 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Team Worksheet</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-  <style>
-    .selected {
-      border: 2px solid;
-    }
-  </style>
-</head>
-<body>
-  <div id="team-selection">
-    <button id="red-team">Red Team</button>
-    <button id="blue-team">Blue Team</button>
-  </div>
-  
-  <div id="worksheet">
-    <!-- Fill-in-the-blank questions with word bank dropdowns go here -->
-  </div>
-  
-  <div id="results">
-    <span>Red Team: <span id="red-score">0</span></span>
-    <span>Blue Team: <span id="blue-score">0</span></span>
-  </div>
-
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyC6toyds2tLzyfiINLUXgPeEgSDU2WhwkI",
-    authDomain: "worksheet-9f4d8.firebaseapp.com",
-    databaseURL: "https://worksheet-9f4d8-default-rtdb.firebaseio.com",
-    projectId: "worksheet-9f4d8",
-    storageBucket: "worksheet-9f4d8.appspot.com",
-    messagingSenderId: "223669808651",
-    appId: "1:223669808651:web:7faa06a79f4a187262210e"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  // Add the Firebase related code here
-</script>
-
-
-  <script>
-   // Variables to store the selected team and the scores
-let selectedTeam = null;
-const scores = {
-  red: 0,
-  blue: 0,
-};
-
-// Sample questions and answers
-const questions = [
-  {
-    question: "The Skeletal System is made of ___ bones and the connective tissue.",
-    correctAnswer: "206",
-    wordBank: ["200", "206", "215"],
-  },
-  {
-    question: "Cartilage is a type of ___ connective tissue.",
-    correctAnswer: "strong, flexible",
-    wordBank: ["rigid, inflexible", "strong, flexible", "elastic, stretchy"],
-  },
-  {
-    question: "A ___ is a band of fibrous, slightly elastic connective tissue that attaches one bone to another.",
-    correctAnswer: "ligament",
-    wordBank: ["tendon", "ligament", "cartilage"],
-  },
-  {
-    question: "The ___ muscles are attached to bones and cause body movements.",
-    correctAnswer: "skeletal",
-    wordBank: ["smooth", "skeletal", "cardiac"],
-  },
-  {
-    question: "The ___ is the largest and most complex part of the brain.",
-    correctAnswer: "cerebrum",
-    wordBank: ["cerebellum", "cerebrum", "brain stem"],
-  },
-  {
-    question: "The Peripheral Nervous System consists of the ___ and the ___ nervous systems.",
-    correctAnswer: "autonomic, somatic",
-    wordBank: ["central, peripheral", "autonomic, somatic", "sympathetic, parasympathetic"],
-  },
-];
-
-
-// Team selection logic
-const redTeamButton = document.getElementById("red-team");
-const blueTeamButton = document.getElementById("blue-team");
-
-redTeamButton.addEventListener("click", () => {
-  selectedTeam = "red";
-  redTeamButton.classList.add("selected");
-  blueTeamButton.classList.remove("selected");
-});
-
-blueTeamButton.addEventListener("click", () => {
-  selectedTeam = "blue";
-  redTeamButton.classList.remove("selected");
-  blueTeamButton.classList.add("selected");
-});
-
-// Render the fill-in-the-blank questions
-const worksheet = document.getElementById("worksheet");
-
-questions.forEach((questionData, questionIndex) => {
-  const questionDiv = document.createElement("div");
-
-  const questionText = document.createElement("p");
-  questionText.innerText = questionData.question;
-  questionDiv.appendChild(questionText);
-
-  const answerSelect = document.createElement("select");
-  questionData.wordBank.forEach((answer) => {
-    const option = document.createElement("option");
-    option.value = answer;
-    option.textContent = answer;
-    answerSelect.appendChild(option);
-  });
-
-  answerSelect.addEventListener("change", () => {
-    if (selectedTeam) {
-      const isCorrect = answerSelect.value === questionData.correctAnswer;
-      if (isCorrect) {
-        scores[selectedTeam]++;
-        updateScores();
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tree Structure with Firebase</title>
+    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js"></script>
+    <style>
+      .button {
+        display: inline-block;
+        margin: 5px;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
       }
-      answerSelect.disabled = true;
+      .red {
+        background-color: red;
+      }
+      .green {
+        background-color: green;
+      }
+      .blue {
+        background-color: blue;
+      }
+      .yellow {
+        background-color: yellow;
+      }
+      .orange {
+        background-color: orange;
+      }
+      .purple {
+        background-color: purple;
+      }
+      .pink {
+        background-color: pink;
+      }
+      .grey {
+        background-color: grey;
+      }
+      .brown {
+        background-color: brown;
+      }
+      .black {
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="tree"></div>
+    <script>
+      // Initialize Firebase
+      const firebaseConfig = {
+  apiKey: "AIzaSyC6toyds2tLzyfiINLUXgPeEgSDU2WhwkI",
+  authDomain: "worksheet-9f4d8.firebaseapp.com",
+  databaseURL: "https://worksheet-9f4d8-default-rtdb.firebaseio.com",
+  projectId: "worksheet-9f4d8",
+  storageBucket: "worksheet-9f4d8.appspot.com",
+  messagingSenderId: "223669808651",
+  appId: "1:223669808651:web:7faa06a79f4a187262210e"
+};
+      firebase.initializeApp(firebaseConfig);
+
+      // Get a reference to the Firebase database
+      const db = firebase.database();
+
+      // Create an initial tree structure
+      const tree = {
+        node1: {
+          unit: "A",
+          number: 1,
+          color: "red",
+          children: {
+            node2: {
+              unit: "B",
+              number: 2,
+              color: "green",
+              children: {
+                node3: {
+                  unit: "C",
+                  number: 3,
+                  color: "blue",
+                  children: {}
+                },
+                node4: {
+                  unit: "D",
+                  number: 4,
+                  color: "yellow",
+                  children: {}
+                }
+              }
+            },
+            node5: {
+              unit: "E",
+              number: 5,
+              color: "orange",
+              children: {
+                node6: {
+                  unit: "F",
+                  number: 6,
+                  color: "purple",
+                  children: {}
+                },
+                node7: {
+                  unit: "G",
+                  number: 7,
+                  color: "pink",
+                  children: {}
+                }
+              }
+            }
+          }
+        },
+        node8: {
+          unit: "H",
+          number: 8,
+          color: "grey",
+          children: {
+            node9: {
+              unit: "I",
+              number: 9,
+              color: "brown",
+              children: {
+                node10: {
+                  unit: "J",
+                  number: 10,
+                  color: "black",
+                  children: {}
+                }
+              }
+            }
+          }
+// Function to create a node element for the tree
+function createNodeElement(node) {
+  // Create a div for the node element
+  const div = document.createElement("div");
+  div.classList.add("node");
+
+  // Create a button for the node element
+  const button = document.createElement("button");
+  button.classList.add("button", node.color);
+  button.textContent = `${node.unit}-${node.number}`;
+  button.addEventListener("click", () => {
+    // Update the color of the button on click
+    const newColor = getRandomColor();
+    button.classList.remove(node.color);
+    button.classList.add(newColor);
+    node.color = newColor;
+    updateNodeInFirebase(node);
+  });
+  div.appendChild(button);
+
+  // Recursively create child node elements and append them to the div
+  const childrenDiv = document.createElement("div");
+  childrenDiv.classList.add("children");
+  Object.values(node.children).forEach(childNode => {
+    const childDiv = createNodeElement(childNode);
+    childrenDiv.appendChild(childDiv);
+  });
+  div.appendChild(childrenDiv);
+
+  return div;
+}
+
+// Function to render the tree in the DOM
+function renderTree() {
+  // Get a reference to the root node of the tree
+  const rootNodeRef = db.ref("tree/node1");
+
+  // Attach a listener to the root node to render the tree
+  rootNodeRef.on("value", snapshot => {
+    const rootNode = snapshot.val();
+    const rootDiv = createNodeElement(rootNode);
+    const treeDiv = document.getElementById("tree");
+    treeDiv.innerHTML = "";
+    treeDiv.appendChild(rootDiv);
+  });
+}
+
+// Function to update a node in Firebase
+function updateNodeInFirebase(node) {
+  const nodeRef = db.ref(`tree/${node.$id}`);
+  nodeRef.set(node);
+}
+
+// Function to generate a random color
+function getRandomColor() {
+  const colors = [
+    "red",
+    "green",
+    "blue",
+    "yellow",
+    "orange",
+    "purple",
+    "pink",
+    "grey",
+    "brown",
+    "black"
+  ];
+  const randomIndex = Math.floor(Math.random() * colors.length);
+  return colors[randomIndex];
+}
+
+// Render the tree in the DOM
+renderTree();
+// Function to add a new node to Firebase
+function addNodeToFirebase(parentNode, newNode) {
+  // Generate a unique ID for the new node
+  const newNodeRef = db.ref("tree").push();
+  newNode.$id = newNodeRef.key;
+
+  // Add the new node to Firebase
+  const parentNodeRef = db.ref(`tree/${parentNode.$id}`);
+  parentNodeRef.update({
+    children: {
+      ...parentNode.children,
+      [newNode.$id]: newNode
+    }
+  });
+}
+
+// Function to remove a node from Firebase
+function removeNodeFromFirebase(node) {
+  const parentNodeRef = db.ref(`tree/${node.$parent.$id}`);
+  parentNodeRef.update({
+    children: {
+      ...node.$parent.children,
+      [node.$id]: null
+    }
+  });
+}
+
+// Function to find a node in the tree
+function findNode(nodeId, currentNode) {
+  if (currentNode.$id === nodeId) {
+    return currentNode;
+  } else {
+    for (const childNode of Object.values(currentNode.children)) {
+      const foundNode = findNode(nodeId, childNode);
+      if (foundNode) {
+        return foundNode;
+      }
+    }
+    return null;
+  }
+}
+
+// Add event listeners to the add node and remove node buttons
+const addNodeButton = document.getElementById("add-node-button");
+const removeNodeButton = document.getElementById("remove-node-button");
+addNodeButton.addEventListener("click", () => {
+  // Prompt the user to enter a new node label
+  const newNodeLabel = prompt("Enter a label for the new node:");
+
+  // If the user entered a label, add the new node to Firebase
+  if (newNodeLabel) {
+    const parentNodeId = prompt("Enter the ID of the parent node:");
+    const parentNode = findNode(parentNodeId, tree);
+    if (parentNode) {
+      const newNode = {
+        unit: newNodeLabel.split("-")[0],
+        number: parseInt(newNodeLabel.split("-")[1]),
+        color: getRandomColor(),
+        children: {}
+      };
+      addNodeToFirebase(parentNode, newNode);
     } else {
-      alert("Please select a team first!");
-      answerSelect.value
-      answerSelect.value = '';
+      alert(`Could not find a node with ID "${parentNodeId}".`);
     }
-  });
-
-  questionDiv.appendChild(answerSelect);
-  worksheet.appendChild(questionDiv);
+  }
 });
+removeNodeButton.addEventListener("click", () => {
+  // Prompt the user to enter the ID of the node to remove
+  const nodeIdToRemove = prompt("Enter the ID of the node to remove:");
 
-// Update the scores display
-const redScoreElement = document.getElementById("red-score");
-const blueScoreElement = document.getElementById("blue-score");
-
-function updateScores() {
-  redScoreElement.innerText = scores.red;
-  blueScoreElement.innerText = scores.blue;
-}
-function saveScores() {
-  const scoresRef = ref(db, "scores");
-  set(scoresRef, scores);
-}
-function listenForScoreUpdates() {
-  const scoresRef = ref(db, "scores");
-  onValue(scoresRef, (snapshot) => {
-    const updatedScores = snapshot.val();
-    if (updatedScores) {
-      scores = updatedScores;
-      updateScores();
+  // If the user entered a node ID, remove the node from Firebase
+  if (nodeIdToRemove) {
+    const nodeToRemove = findNode(nodeIdToRemove, tree);
+    if (nodeToRemove) {
+      removeNodeFromFirebase(nodeToRemove);
+    } else {
+      alert(`Could not find a node with ID "${nodeIdToRemove}".`);
     }
-  });
-}
-
-  </script>
-</body>
-</html>
+  }
+});
