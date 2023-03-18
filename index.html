@@ -128,7 +128,29 @@ studentNameSelect.addEventListener("change", (event) => {
 // Worksheet logic
 const worksheetDiv = document.getElementById("worksheet");
 questions.forEach((question, index) => {
-  // Add question creation logic here
+  <!-- Add the missing question generation logic -->
+questions.forEach((question, index) => {
+  const questionDiv = document.createElement("div");
+  questionDiv.innerHTML = `<p>${question.question}</p>`;
+  const select = document.createElement("select");
+
+  question.wordBank.forEach((word) => {
+    const option = document.createElement("option");
+    option.value = word;
+    option.textContent = word;
+    select.appendChild(option);
+  });
+
+  select.addEventListener("change", (event) => {
+    if (event.target.value === question.correctAnswer) {
+      saveScore();
+    }
+  });
+
+  questionDiv.appendChild(select);
+  worksheetDiv.appendChild(questionDiv);
+});
+
 });
 
 // Score display logic
@@ -177,5 +199,4 @@ function saveScore() {
 
 // Call saveScore() whenever a correct answer is selected
 
-</body>
-</html>
+
