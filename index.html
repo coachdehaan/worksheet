@@ -32,7 +32,8 @@
     </div>
 
     <div id="worksheet"></div>
-
+    
+    <button id="submit-button">Submit</button>
     <div id="results">
       <h3>Individual Scores</h3>
       <ul id="individual-scores"></ul>
@@ -40,7 +41,25 @@
       <span>Red Team: <span id="red-score">0</span></span>
       <span>Blue Team: <span id="blue-score">0</span></span>
     </div>
-
+<script>const worksheetDiv2 = document.getElementById("worksheet");
+  scienceQuestions.forEach((question, index) => {
+    const questionElement = document.createElement("div");
+    questionElement.innerHTML = `
+      <p>${question.question}</p>
+      <select data-correct-answer="${question.correctAnswer}" data-question-index="${index}">
+        <option value="">Select answer</option>
+        ${question.wordBank
+          .map(
+            (answer) =>
+              `<option value="${answer}">${answer}</option>`
+          )
+          .join("")}
+      </select>
+      <button class="answer-button">Submit Answer</button>
+    `;
+    worksheetDiv.appendChild(questionElement);
+  });</script>
+    
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
       import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
