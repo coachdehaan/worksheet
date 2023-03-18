@@ -11,15 +11,14 @@
     <script>
       // Initialize Firebase
       const firebaseConfig = {
-        // Your firebase configuration
-        apiKey: "AIzaSyC6toyds2tLzyfiINLUXgPeEgSDU2WhwkI",
+  apiKey: "AIzaSyC6toyds2tLzyfiINLUXgPeEgSDU2WhwkI",
   authDomain: "worksheet-9f4d8.firebaseapp.com",
   databaseURL: "https://worksheet-9f4d8-default-rtdb.firebaseio.com",
   projectId: "worksheet-9f4d8",
   storageBucket: "worksheet-9f4d8.appspot.com",
   messagingSenderId: "223669808651",
   appId: "1:223669808651:web:7faa06a79f4a187262210e"
-      };
+};
 
       firebase.initializeApp(firebaseConfig);
 
@@ -43,78 +42,43 @@
       };
 
       // Create buttons for each variable in the treeData object
-      const treeDiv = document.getElementById("tree");
-      for (const level1Key in treeData.level1) {
-        const level1Div = document.createElement("div");
-        const level1Span = document.createElement("span");
-        const level1Button = document.createElement("button");
-        level1Span.textContent = level1Key;
-        level1Button.textContent = treeData.level1[level1Key];
-        level1Button.addEventListener("click", () => {
-          treeData.level1[level1Key] = `updated_${treeData.level1[level1Key]}`;
-          database.ref(`tree/level1/${level1Key}`).set(treeData.level1[level1Key]);
-          level1Button.textContent = treeData.level1[level1Key];
-          level1Button.style.backgroundColor = "green";
+      const treeDiv = document.createElement("div");
+      document.body.appendChild(treeDiv);
+
+      function createButton(key, value, path) {
+        const div = document.createElement("div");
+        const span = document.createElement("span");
+        const button = document.createElement("button");
+        span.textContent = key;
+        button.textContent = value;
+        button.addEventListener("click", () => {
+          const updatedValue = `updated_${value}`;
+          database.ref(path).set(updatedValue);
+          button.textContent = updatedValue;
+          button.style.backgroundColor = "green";
         });
-        level1Div.appendChild(level1Span);
-        level1Div.appendChild(level1Button);
-        treeDiv.appendChild(level1Div);
-        if (typeof treeData.level1[level1Key] === "object") {
-          for (const level2Key in treeData.level1[level1Key]) {
-            const level2Div = document.createElement("div");
-            const level2Span = document.createElement("span");
-            const level2Button = document.createElement("button");
-            level2Span.textContent = level2Key;
-            level2Button.textContent = treeData.level1[level1Key][level2Key];
-            level2Button.addEventListener("click", () => {
-              treeData.level1[level1Key][level2Key] = `updated_${treeData.level1[level1Key][level2Key]}`;
-              database.ref(`tree/level1/${level1Key}/${level2Key}`).set(treeData.level1[level1Key][level2Key]);
-              level2Button.textContent = treeData.level1[level1Key][level2Key];
-              level2Button.style.backgroundColor = "green";
-            });
-            level2Div.appendChild(level2Span);
-            level2Div.appendChild(level2Button);
-            level1Div.appendChild(level2Div);
-            if (typeof treeData.level1[level1Key][level2
-            if (typeof treeData.level1[level1Key][level2Key] === "object") {
-            for (const level3Key in treeData.level1[level1Key][level2Key]) {
-              const level3Div = document.createElement("div");
-              const level3Span = document.createElement("span");
-              const level3Button = document.createElement("button");
-              level3Span.textContent = level3Key;
-              level3Button.textContent = treeData.level1[level1Key][level2Key][level3Key];
-              level3Button.addEventListener("click", () => {
-                treeData.level1[level1Key][level2Key][level3Key] = `updated_${treeData.level1[level1Key][level2Key][level3Key]}`;
-                const level3Ref = database.ref(`tree/level1/${level1Key}/${level2Key}/${level3Key}`);
-                level3Ref.set(treeData.level1[level1Key][level2Key][level3Key], (error) => {
-                  if (error) {
-                    console.log("Failed to update level3 value:", error);
-                  } else {
-                    level3Button.textContent = treeData.level1[level1Key][level2Key][level3Key];
-                    level3Button.style.backgroundColor = "green";
-                  }
-                });
-              });
-              level3Div.appendChild(level3Span);
-              level3Div.appendChild(level3Button);
-              level2Div.appendChild(level3Div);
-            }
+        div.appendChild(span);
+        div.appendChild(button);
+        treeDiv.appendChild(div);
+      }
+
+      function createButtons(data, path) {
+        for (const key in data) {
+          const value = data[key];
+          const currentPath = `${path}/${key}`;
+          if (typeof value === "object") {
+            createButton(key, " ", currentPath);
+            createButtons(value, currentPath);
+          } else {
+            createButton(key, value, currentPath);
           }
         }
       }
-    }
 
-    // Read the data from the database and update the tree on the page
-    database.ref("tree").on("value", (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        treeData.level1 = data.level1;
-        updateTree();
-      }
-    });
+      createButtons(treeData, "tree");
 
-    // Write the initial data to the database
-    database.ref("tree").set(treeData);
-  </script>
-</body>
+      // Write the data to the database
+      database.ref("tree").set(treeData);
+    </script>
+  </body>
 </html>
