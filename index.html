@@ -134,6 +134,8 @@
             }
           }
         }
+       }
+      
 // Function to create a node element for the tree
 <script>
 function createNodeElement(node) {
@@ -168,8 +170,7 @@ function createNodeElement(node) {
 }
 
 // Function to render the tree in the DOM
-function renderTree() {
-  // Get a reference to the root node of the tree
+function renderTree() {  // Get a reference to the root node of the tree
   const rootNodeRef = db.ref("tree/node1");
 
   // Attach a listener to the root node to render the tree
