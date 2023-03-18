@@ -160,6 +160,7 @@ const scoresRef = ref(db, "scores");
   });
 
   questions.forEach((question, index) => {
+    console.log(`Adding question ${index}: ${question.question}`);
     const questionElement = document.createElement("div");
     questionElement.innerHTML = `
       <p>${question.question}</p>
