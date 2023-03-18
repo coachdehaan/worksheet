@@ -126,32 +126,34 @@ studentNameSelect.addEventListener("change", (event) => {
 });
 
 // Worksheet logic
+// Worksheet logic
 const worksheetDiv = document.getElementById("worksheet");
 questions.forEach((question, index) => {
-  <!-- Add the missing question generation logic -->
-questions.forEach((question, index) => {
-  const questionDiv = document.createElement("div");
-  questionDiv.innerHTML = `<p>${question.question}</p>`;
-  const select = document.createElement("select");
-
-  question.wordBank.forEach((word) => {
-    const option = document.createElement("option");
-    option.value = word;
-    option.textContent = word;
-    select.appendChild(option);
-  });
-
-  select.addEventListener("change", (event) => {
-    if (event.target.value === question.correctAnswer) {
-      saveScore();
-    }
-  });
-
-  questionDiv.appendChild(select);
-  worksheetDiv.appendChild(questionDiv);
+  const questionElement = document.createElement("div");
+  questionElement.innerHTML = `
+    <p>${question.question}</p>
+    <select data-correct-answer="${question.correctAnswer}" data-question-index="${index}">
+      <option value="">Select answer</option>
+      ${question.wordBank.map((answer) => `<option value="${answer}">${answer}</option>`).join("")}
+    </select>
+  `;
+  worksheetDiv.appendChild(questionElement);
 });
 
+worksheetDiv.addEventListener("change", (event) => {
+  if (event.target.tagName !== "SELECT") return;
+
+  const correctAnswer = event.target.dataset.correctAnswer;
+  const selectedAnswer = event.target.value;
+  const questionIndex = event.target.dataset.questionIndex;
+
+  if (selectedAnswer === correctAnswer) {
+    saveScore();
+  }
 });
+
+
+
 
 // Score display logic
 const individualScoresList = document.getElementById("individual-scores");
