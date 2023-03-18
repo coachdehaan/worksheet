@@ -33,6 +33,7 @@
 
     <div id="worksheet">
       <!-- Fill-in-the-blank questions with word bank dropdowns go here -->
+      
     </div>
 
     <div id="results">
@@ -46,7 +47,21 @@
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
       import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
+      const questions = [  {    question: "The capital of France is ___",    correctAnswer: "Paris",    wordBank: ["London", "Paris", "Madrid", "Berlin"]
+  },
+  {
+    question: "The largest planet in our solar system is ___",
+    correctAnswer: "Jupiter",
+    wordBank: ["Venus", "Mars", "Jupiter", "Saturn"]
+  },
+  {
+    question: "The author of 'The Hobbit' is ___",
+    correctAnswer: "J.R.R. Tolkien",
+    wordBank: ["J.K. Rowling", "George R.R. Martin", "J.R.R. Tolkien", "Stephen King"]
+  }
+];
 
+      
       const firebaseConfig = {
         // Your Firebase config here
       };
@@ -115,51 +130,60 @@
       });
 
       worksheetDiv.addEventListener("click", (event) => {
-        if (event.target.tagName !== "BUTTON") return;
-        const selectElement = event.target.previousSibling;
-        const correctAnswer = selectElement.dataset.correctAnswer;
-        const selectedAnswer = selectElement.value;
-        const questionIndex = selectElement.dataset.questionIndex;
-        const teamColor = selectedTeam === "red" ? "red" : "blue";
+  if (!event.target.classList.contains("answer-button")) return;
+  const selectElement = event.target.previousSibling;
+  const correctAnswer = selectElement.dataset.correctAnswer;
+  const selectedAnswer = selectElement.value;
+  const questionIndex = selectElement.dataset.questionIndex;
+  const teamColor = selectedTeam === "red" ? "red" : "blue";
 
-        // Check if answer is correct and update scores
-        if (selectedAnswer === correctAnswer) {
-          saveScore(questionIndex);
-          event.target.style.backgroundColor = teamColor;
-          selectElement.disabled = true;
-        } else {
-          event.target.style.backgroundColor = "grey";
-        }
-      });
+  // Check if answer is correct and update scores
+  if (selectedAnswer === correctAnswer) {
+    saveScore(questionIndex);
+    event.target.style.backgroundColor = teamColor;
+    selectElement.disabled = true;
+  } else {
+    event.target.style.backgroundColor = "grey";
+  }
+});
+
 
       // Save score to Firebase
       function saveScore(questionIndex) {
-        if (!selectedStudent || !selectedTeam) return;
+  if (!selectedStudent || !selectedTeam) return;
 
-        const studentRef = ref(scoresRef, `${selectedStudent}/${selectedTeam}`);
-        const questionRef = ref(studentRef, `${questionIndex}`);
+  const studentRef = ref(scoresRef, `${selectedStudent}/${selectedTeam}`);
+  const questionRef = ref(studentRef, `${questionIndex}`);
 
-        set(questionRef, true);
+  set(questionRef, true);
 
-        // Calculate and update team score
-        let teamScoreElement;
-        if (selectedTeam === "red") {
-          scores.red += 1;
-          teamScoreElement = document.getElementById("red-score");
-        } else {
-          scores.blue += 1;
-          teamScoreElement = document.getElementById("blue-score");
-        }
-        teamScoreElement.textContent = scores[selectedTeam];
-      }
+  // Calculate and update team score
+  let teamScoreElement;
+  if (selectedTeam === "red") {
+    scores.red += 1;
+    teamScoreElement = document.getElementById("red-score");
+  } else {
+    scores.blue += 1;
+    teamScoreElement = document.getElementById("blue-score");
+  }
+  teamScoreElement.textContent = scores[selectedTeam];
+}
+
 
       // Load individual and team scores from Firebase
-      const scoresRef = ref(db, "scores");
+     
       onValue(scoresRef, (snapshot) => {
         const data = snapshot.val();
         if (!data) return;
 
         // Update individual scores
+        const scores = {
+  red: 0,
+  blue: 0
+};
+const submitButton = document.getElementById("submit-button");
+
+        
         const individualScoresList = document.getElementById(
           "individual-scores"
         );
