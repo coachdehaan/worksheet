@@ -33,6 +33,23 @@
 
     <div id="worksheet">
       <!-- Fill-in-the-blank questions with word bank dropdowns go here -->
+      questions.forEach((question, index) => {
+        const questionElement = document.createElement("div");
+        questionElement.innerHTML = `
+          <p>${question.question}</p>
+          <select data-correct-answer="${question.correctAnswer}" data-question-index="${index}">
+            <option value="">Select answer</option>
+            ${question.wordBank
+              .map(
+                (answer) =>
+                  `<option value="${answer}">${answer}</option>`
+              )
+              .join("")}
+          </select>
+          <button class="answer-button">Submit Answer</button>
+        `;
+        worksheetDiv.appendChild(questionElement);
+      });
       
     </div>
 
