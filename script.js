@@ -63,6 +63,68 @@ function createQuestionElement(key, questionObj) {
 
   return div;
 }
+// ... (previous code for initializing firebase, quizData, and writing quiz data to the database)
+
+// Variables for user's name and team color
+const userNameInput = document.getElementById("userName");
+const teamColorSelect = document.getElementById("teamColor");
+
+// Function to handle quiz submission
+function handleSubmitQuiz() {
+  const userName = userNameInput.value;
+  const teamColor = teamColorSelect.value;
+  let score = 0;
+
+  for (const key in quizData) {
+    const questionElement = document.getElementById(key);
+    const correctChoice = questionElement.getAttribute("data-correct-choice");
+    const selectedChoice = questionElement.getAttribute("data-selected-choice");
+
+    if (correctChoice === selectedChoice) {
+      score++;
+    }
+  }
+
+  // Save user's score, name, and team color to the database
+  database.ref(`results/${userName}`).set({
+    name: userName,
+    teamColor: teamColor,
+    score: score,
+  });
+
+  alert(`Quiz submitted! Your score is: ${score}`);
+}
+
+document.getElementById("submitQuiz").addEventListener("click", handleSubmitQuiz);
+
+function createQuestionElement(key, questionObj) {
+  // ... (previous code to create question elements)
+
+  for (const choiceKey in questionObj.choices) {
+    // ... (previous code to create choice buttons)
+
+    button.addEventListener("click", () => {
+      const previousChoice = questionElement.getAttribute("data-selected-choice");
+      if (previousChoice) {
+        const previousButton = questionElement.querySelector(`button[data-choice='${previousChoice}']`);
+        previousButton.classList.remove("selected");
+      }
+
+      questionElement.setAttribute("data-selected-choice", choiceKey);
+      button.classList.add("selected");
+    });
+
+    button.setAttribute("data-choice", choiceKey);
+    choiceDiv.appendChild(button);
+    div.appendChild(choiceDiv);
+  }
+
+  div.setAttribute("data-correct-choice", questionObj.correctChoice);
+  div.setAttribute("id", key);
+  return div;
+}
+
+// ... (remaining code to create question elements and append them to the container)
 
 for (const key in quizData) {
   const questionElement = createQuestionElement(key, quizData[key]);

@@ -34,4 +34,15 @@ body {
   button.updated {
     background-color: green;
   }
+  .selected {
+    background-color: yellow;
+  }
   
+  .correct {
+    background-color: green;
+  }
+  
+  .incorrect {
+    background-color: red;
+  }
+   
