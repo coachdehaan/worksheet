@@ -37,7 +37,9 @@ const firebaseConfig = {
     // ... (remaining questions)
   };
   
-  
+  // Write the quiz data to the database
+database.ref("quiz").set(quizData);
+
   
   
   const questionsContainer = document.getElementById("questionsContainer");
