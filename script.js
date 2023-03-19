@@ -72,7 +72,19 @@ const firebaseConfig = {
   
     
     
- 
+ // Get a reference to the quiz data in Firebase
+const quizRef = database.ref("quiz");
+
+// Attach a listener to the quiz data to render the questions in the DOM
+quizRef.on("value", snapshot => {
+  const quizData = snapshot.val();
+  for (const questionKey in quizData) {
+    const questionObj = quizData[questionKey];
+    const questionDiv = createQuestionElement(questionKey, questionObj);
+    questionsContainer.appendChild(questionDiv);
+  }
+});
+
 
 // Variables for user's name and team color
 const userNameInput = document.getElementById("userName");
