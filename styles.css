@@ -1,0 +1,37 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  #treeDiv {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  div {
+    display: flex;
+    align-items: center;
+    margin: 5px;
+  }
+  
+  button {
+    margin-left: 5px;
+    padding: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: lightblue;
+  }
+  
+  button.updated {
+    background-color: green;
+  }
+  
