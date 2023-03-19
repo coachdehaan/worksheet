@@ -15,85 +15,30 @@ const firebaseConfig = {
   const database = firebase.database();
   
   // Define the data to be written to the tree
-  const questions = [
-    {
-      question: "What is a fracture?",
+  const quizData = {
+    question1: {
+      text: "What is a fracture?",
       choices: {
         a: "Inflammation of a joint",
         b: "Any type of break in the bone",
         c: "Repeated movements of wrists",
-        d: "Inherited disorder in which skeletal muscle fibers are progressively destroyed"
-      }
+        d: "Inherited disorder in which skeletal muscle fibers are progressively destroyed",
+      },
     },
-    {
-      question: "What is a dislocation?",
+    question2: {
+      text: "What is a dislocation?",
       choices: {
         a: "Bone slips out of place",
         b: "Sharp blow to a joint",
         c: "Painful swelling of the bursae",
-        d: "Inflammation of a joint"
-      }
+        d: "Inflammation of a joint",
+      },
     },
-    {
-      question: "What is carpal tunnel syndrome?",
-      choices: {
-        a: "A condition in which there is a progressive loss of bone tissue",
-        b: "A type of striated muscle that forms the wall of the heart",
-        c: "An organ or tissue protrudes through an area of weak muscle",
-        d: "Occurs when ligaments and tendons in the wrist swell"
-      }
-    },
-    {
-      question: "What is a smooth muscle?",
-      choices: {
-        a: "Attached to bone that cause body movements",
-        b: "The muscle that opens a joint",
-        c: "Act on the lining of the body's passageways and hollow internal organs",
-        d: "A type of striated muscle that forms the wall of the heart"
-      }
-    },
-    {
-      question: "What is a flexor?",
-      choices: {
-        a: "The muscle that closes a joint",
-        b: "The muscle that opens a joint",
-        c: "An inherited disorder in which skeletal muscle fibers are progressively destroyed",
-        d: "A type of striated muscle that forms the wall of the heart"
-      }
-    }
-  ];
-  
+    // ... (remaining questions)
   };
-  // ... (previous code for initializing firebase)
-
-// Get a reference to the questions container
-const questionsContainer = document.getElementById("questionsContainer");
-
-function createQuestionElement(questionObj) {
-  const div = document.createElement("div");
-  const h2 = document.createElement("h2");
-  h2.textContent = questionObj.question;
-  div.appendChild(h2);
-
-  for (const key in questionObj.choices) {
-    const choiceDiv = document.createElement("div");
-    const span = document.createElement("span");
-    const button = document.createElement("button");
-    span.textContent = `${key}: `;
-    button.textContent = questionObj.choices[key];
-    choiceDiv.appendChild(span);
-    choiceDiv.appendChild(button);
-    div.appendChild(choiceDiv);
-  }
-
-  return div;
-}
-
-questions.forEach((questionObj) => {
-  const questionElement = createQuestionElement(questionObj);
-  questionsContainer.appendChild(questionElement);
-});
-
+  
+  
+  
   
   // Create buttons for each variable in the treeData object
   const treeDiv = document.getElementById("treeDiv");
