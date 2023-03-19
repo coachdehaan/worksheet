@@ -1,75 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quiz</title>
-    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js"></script>
+    <meta charset="UTF-8">
+    <title>Quiz Questions</title>
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <h1>Quiz Questions</h1>
+    <label for="userName">Name:</label>
+    <input type="text" id="userName">
+    <label for="teamColor">Team Color:</label>
+    <select id="teamColor">
+      <option value="blue">Blue</option>
+      <option value="red">Red</option>
+    </select>
     <div id="questionsContainer"></div>
-
-    <script>
-      const firebaseConfig = {
-        // Your Firebase config object goes here
-      };
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
-
-      const quizData = {
-        question1: {
-          text: "What is a fracture?",
-          choices: {
-            a: "Inflammation of a joint",
-            b: "Any type of break in the bone",
-            c: "Repeated movements of wrists",
-            d: "Inherited disorder in which skeletal muscle fibers are progressively destroyed",
-          },
-        },
-        question2: {
-          text: "What is a dislocation?",
-          choices: {
-            a: "Bone slips out of place",
-            b: "Sharp blow to a joint",
-            c: "Painful swelling of the bursae",
-            d: "Inflammation of a joint",
-          },
-        },
-        // ... (remaining questions)
-      };
-
-      const questionsContainer = document.getElementById("questionsContainer");
-
-      function createQuestionElement(key, questionObj) {
-        const div = document.createElement("div");
-        const h2 = document.createElement("h2");
-        h2.textContent = questionObj.text;
-        div.appendChild(h2);
-
-        for (const choiceKey in questionObj.choices) {
-          const choiceDiv = document.createElement("div");
-          const span = document.createElement("span");
-          const button = document.createElement("button");
-          span.textContent = `${choiceKey}: `;
-          button.textContent = questionObj.choices[choiceKey];
-          button.addEventListener("click", () => {
-            const userAnswer = choiceKey === "a" ? 2 : 1;
-            db.ref(`userAnswers/${key}`).set(userAnswer);
-          });
-          choiceDiv.appendChild(span);
-          choiceDiv.appendChild(button);
-          div.appendChild(choiceDiv);
-        }
-
-        return div;
-      }
-
-      // Render the quiz questions in the DOM
-      for (const questionKey in quizData) {
-        const questionDiv = createQuestionElement(questionKey, quizData[questionKey]);
-        questionsContainer.appendChild(questionDiv);
-      }
-    </script>
+   
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>
+

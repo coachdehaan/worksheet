@@ -11,10 +11,11 @@ const firebaseConfig = {
   
   firebase.initializeApp(firebaseConfig);
   
-  // Get a reference to the database service
-  const database = firebase.database();
   
-  // Define the data to be written to the tree
+  
+
+  const db = firebase.database();
+
   const quizData = {
     question1: {
       text: "What is a fracture?",
@@ -36,34 +37,42 @@ const firebaseConfig = {
     },
     // ... (remaining questions)
   };
-  
-  // Write the quiz data to the database
-database.ref("quiz").set(quizData);
 
-  
-  
   const questionsContainer = document.getElementById("questionsContainer");
 
-function createQuestionElement(key, questionObj) {
-  const div = document.createElement("div");
-  const h2 = document.createElement("h2");
-  h2.textContent = questionObj.text;
-  div.appendChild(h2);
+  function createQuestionElement(key, questionObj) {
+    const div = document.createElement("div");
+    const h2 = document.createElement("h2");
+    h2.textContent = questionObj.text;
+    div.appendChild(h2);
 
-  for (const choiceKey in questionObj.choices) {
-    const choiceDiv = document.createElement("div");
-    const span = document.createElement("span");
-    const button = document.createElement("button");
-    span.textContent = `${choiceKey}: `;
-    button.textContent = questionObj.choices[choiceKey];
-    choiceDiv.appendChild(span);
-    choiceDiv.appendChild(button);
-    div.appendChild(choiceDiv);
+    for (const choiceKey in questionObj.choices) {
+      const choiceDiv = document.createElement("div");
+      const span = document.createElement("span");
+      const button = document.createElement("button");
+      span.textContent = `${choiceKey}: `;
+      button.textContent = questionObj.choices[choiceKey];
+      button.addEventListener("click", () => {
+        const userAnswer = choiceKey === "a" ? 2 : 1;
+        db.ref(`userAnswers/${key}`).set(userAnswer);
+      });
+      choiceDiv.appendChild(span);
+      choiceDiv.appendChild(button);
+      div.appendChild(choiceDiv);
+    }
+
+    return div;
   }
 
-  return div;
-}
-// ... (previous code for initializing firebase, quizData, and writing quiz data to the database)
+  // Render the quiz questions in the DOM
+  for (const questionKey in quizData) {
+    const questionDiv = createQuestionElement(questionKey, quizData[questionKey]);
+    questionsContainer.appendChild(questionDiv);
+  }
+  
+    
+    
+ 
 
 // Variables for user's name and team color
 const userNameInput = document.getElementById("userName");
