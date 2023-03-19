@@ -40,39 +40,29 @@ const firebaseConfig = {
   
   
   
-  // Create buttons for each variable in the treeData object
-  const treeDiv = document.getElementById("treeDiv");
-  
-  function createButton(key, value, path) {
-    const div = document.createElement("div");
+  const questionsContainer = document.getElementById("questionsContainer");
+
+function createQuestionElement(key, questionObj) {
+  const div = document.createElement("div");
+  const h2 = document.createElement("h2");
+  h2.textContent = questionObj.text;
+  div.appendChild(h2);
+
+  for (const choiceKey in questionObj.choices) {
+    const choiceDiv = document.createElement("div");
     const span = document.createElement("span");
     const button = document.createElement("button");
-    span.textContent = key;
-    button.textContent = value;
-    button.addEventListener("click", () => {
-      const updatedValue = `updated_${value}`;
-      database.ref(path).set(updatedValue);
-      button.textContent = updatedValue;
-      button.classList.add("updated");
-    });
-    div.appendChild(span);
-    div.appendChild(button);
-    treeDiv.appendChild(div);
+    span.textContent = `${choiceKey}: `;
+    button.textContent = questionObj.choices[choiceKey];
+    choiceDiv.appendChild(span);
+    choiceDiv.appendChild(button);
+    div.appendChild(choiceDiv);
   }
-  
-  function createButtons(data, path) {
-    for (const key in data) {
-      const value = data[key];
-      const currentPath = `${path}/${key}`;
-      if (typeof value === "object") {
-        createButton(key, " ", currentPath);
-        createButtons(value, currentPath);
-      } else {
-        createButton(key, value, currentPath);
-      }
-    }
-  }
-  
-  createButtons(treeData, "tree");
-  // Write the data to the database
-database.ref("tree").set(treeData);
+
+  return div;
+}
+
+for (const key in quizData) {
+  const questionElement = createQuestionElement(key, quizData[key]);
+  questionsContainer.appendChild(questionElement);
+}
